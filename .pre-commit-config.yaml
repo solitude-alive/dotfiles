@@ -30,7 +30,6 @@ repos:
     rev: v0.11.0.1
     hooks:
       - id: shellcheck
-        args: ["--severity=warning"] # Only report 'warning' level issues or higher
 
   # Auto-formatting: Standardize shell script style
   - repo: https://github.com/scop/pre-commit-shfmt
