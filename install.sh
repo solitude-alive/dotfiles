@@ -6,7 +6,7 @@ echo "Starting Dotfiles Setup..."
 echo "=============================="
 
 # --- module 1: Zsh set up ---
-echo ">> [1/N] Setting up Zsh environment..."
+echo ">> [1/1] Setting up Zsh environment..."
 
 ./zsh/install.sh || {
   echo "Zsh setup failed!" >&2
