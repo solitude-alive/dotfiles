@@ -8,7 +8,10 @@ echo "=============================="
 # --- module 1: Zsh set up ---
 echo ">> [1/N] Setting up Zsh environment..."
 
-./zsh/install.sh || { echo "Zsh setup failed!" >&2; exit 1; }
+./zsh/install.sh || {
+  echo "Zsh setup failed!" >&2
+  exit 1
+}
 
 echo "Zsh setup successfully."
 

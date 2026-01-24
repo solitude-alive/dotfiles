@@ -1,3 +1,5 @@
+# shellcheck shell=bash
+
 # --- 1. setting  ---
 if [ -f "$HOME/.p10k.zsh" ]; then
     source "$HOME/.p10k.zsh"
@@ -6,9 +8,11 @@ fi
 export ZSH="$HOME/.oh-my-zsh"
 
 # --- 2. theme (need download p10k first) ---
+# shellcheck disable=SC2034
 ZSH_THEME="powerlevel10k/powerlevel10k"
 
 # --- 3. plugins----
+# shellcheck disable=SC2034
 plugins=(
     git
     zsh-autosuggestions
@@ -32,4 +36,3 @@ else
 fi
 
 # You can add more custom configurations below
-

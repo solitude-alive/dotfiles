@@ -727,7 +727,7 @@
   typeset -g POWERLEVEL9K_RANGER_FOREGROUND=178
   # Custom icon.
   typeset -g POWERLEVEL9K_RANGER_VISUAL_IDENTIFIER_EXPANSION='▲'
-  
+
   ####################[ yazi: yazi shell (https://github.com/sxyazi/yazi) ]#####################
   # Yazi shell color.
   typeset -g POWERLEVEL9K_YAZI_FOREGROUND=178
