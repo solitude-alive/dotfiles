@@ -10,3 +10,6 @@ alias l="ls -CF"
 alias rm="rm -i"
 alias cp="cp -i"
 alias mv="mv -i"
+
+# python3
+alias python='python3'
