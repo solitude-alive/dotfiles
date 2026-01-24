@@ -1,0 +1,12 @@
+# clear
+alias c="clear"
+
+# ls commands
+alias ll="ls -alF"
+alias la="ls -A"
+alias l="ls -CF"
+
+# remove, copy, and move with confirmation
+alias rm="rm -i"
+alias cp="cp -i"
+alias mv="mv -i"
