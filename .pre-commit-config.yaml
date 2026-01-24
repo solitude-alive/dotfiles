@@ -1,5 +1,5 @@
 # Exclude specific directories from checks (e.g., build artifacts, virtual envs)
-exclude: 'build|dist|.git'
+exclude: 'build|dist|.git|zsh/.p10k.zsh'
 
 default_language_version:
   python: python3
