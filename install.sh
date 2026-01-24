@@ -16,7 +16,7 @@ echo ">> [1/1] Setting up Zsh environment..."
 echo "Zsh setup successfully."
 
 echo "=============================="
-# ：
+# :--- module 2: Git set up ---
 # echo ">> [2/N] Setting up Git..."
 # ./git/install.sh
 # ...
