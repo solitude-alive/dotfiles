@@ -38,11 +38,6 @@ fi
 # --- 4. link common configuration files ---
 echo "Linking common configuration files..."
 
-# backup existing .zshrc if it's not a symlink
-if [ -f "$HOME/.zshrc" ] && [ ! -L "$HOME/.zshrc" ]; then
-  echo "Backing up existing .zshrc to .zshrc.pre-dotfiles.TIMESTAMP"
-  mv "$HOME/.zshrc" "$HOME/.zshrc.pre-dotfiles.$(date +%s)"
-fi
 # backup .zsh_aliases
 if [ -f "$HOME/.zsh_aliases" ] && [ ! -L "$HOME/.zsh_aliases" ]; then
   echo "Backing up existing .zsh_aliases to .zsh_aliases.backup.TIMESTAMP"
@@ -54,11 +49,36 @@ if [ -f "$HOME/.p10k.zsh" ] && [ ! -L "$HOME/.p10k.zsh" ]; then
 fi
 
 ## Create a symlink to use the common configuration from your repository
-ln -sf "$CURRENT_DIR/.zshrc" "$HOME/.zshrc"
 ln -sf "$CURRENT_DIR/.zsh_aliases" "$HOME/.zsh_aliases"
 ln -sf "$CURRENT_DIR/.p10k.zsh" "$HOME/.p10k.zsh"
 
-# --- 5. (local specific) ---
+# --- 5. create .zshrc ---
+ZSHRC_FILE="$HOME/.zshrc"
+INIT_FILE="$CURRENT_DIR/init.zsh"
+
+echo "Updating ~/.zshrc to source our init.zsh..."
+
+# check .zshrc is already sourcing our init file
+if grep -q "source $INIT_FILE" "$ZSHRC_FILE" 2>/dev/null; then
+  echo " ~/.zshrc already sources your init file."
+else
+  # backup existing .zshrc if it's not a symlink
+  if [ -f "$ZSHRC_FILE" ] && [ ! -L "$ZSHRC_FILE" ]; then
+    TS=$(date +%s)
+    echo "Backing up existing .zshrc to .zshrc.backup.$TS"
+    cp "$ZSHRC_FILE" "$ZSHRC_FILE.backup.$TS"
+  fi
+
+  {
+    echo "# [DOTFILES] Load custom configuration"
+    echo "source \"$INIT_FILE\""
+    echo ""
+    echo "# [SYSTEM] Other tools can append configuration below:"
+  } >"$ZSHRC_FILE"
+  echo "New entry point generated."
+fi
+
+# --- 6. local specific ---
 # We agree that the personalized configuration file is named .zshrc.local
 if [ ! -f "$HOME/.zshrc.local" ]; then
   echo "no local config found, creating an empty ~/.zshrc.local"
