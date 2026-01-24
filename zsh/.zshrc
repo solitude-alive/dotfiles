@@ -1,6 +1,7 @@
 # shellcheck shell=bash
 
 # --- 1. setting  ---
+# shellcheck disable=SC1091
 if [ -f "$HOME/.p10k.zsh" ]; then
     source "$HOME/.p10k.zsh"
 fi
