@@ -17,6 +17,7 @@ repos:
       - id: check-yaml
       - id: check-toml
       - id: check-merge-conflict
+      - id: check-shebang-scripts-are-executable # Ensure any file with a shebang (#!) is marked as executable (+x)
       - id: check-executables-have-shebangs # Ensure scripts have a shebang (e.g., #!/bin/bash)
       - id: check-added-large-files
         args: ['--maxkb=5000'] # Prevent committing files larger than 5MB
