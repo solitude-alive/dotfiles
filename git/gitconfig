@@ -18,7 +18,7 @@
     editor = vim               # Default editor
     quotepath = false          # Display Chinese filenames correctly
     ignorecase = false         # Case sensitivity
-    autocrlf = input           
+    autocrlf = input
 
 [init]
     defaultBranch = main
@@ -44,4 +44,4 @@
     br = branch
     ci = commit
     # A beautiful graph log view
-    lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
+    lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cd) %C(bold blue)<%an>%Creset %C(dim white)<%ae>%Creset' --abbrev-commit --date=format:'%Y-%m-%d %H:%M'
