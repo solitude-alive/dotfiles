@@ -21,7 +21,7 @@ This script will create symbolic links for the configuration files in your home 
 
 ## Explanation of Files
 - `zsh`: Zsh shell configuration, including themes and plugins.
-- `git`: Git configuration, including pre-commit hooks.
+- `git`: Git configuration, including gitconfig, pre-commit hooks.
 
 ## pre-commit
 
