@@ -1,0 +1,47 @@
+# dotfiles/git/.gitconfig
+
+# --- 1. Include Local Identity (Privacy Protection) ---
+# This file is not tracked by git and contains your name/email
+[include]
+    path = ~/.gitconfig.local
+
+# --- 2. Git LFS (Large File Storage) ---
+# Essential for AI/ML projects (weights, datasets)
+[filter "lfs"]
+    clean = git-lfs clean -- %f
+    smudge = git-lfs smudge -- %f
+    process = git-lfs filter-process
+    required = true
+
+# --- 3. Core Settings ---
+[core]
+    editor = vim               # Default editor
+    quotepath = false          # Display Chinese filenames correctly
+    ignorecase = false         # Case sensitivity
+    autocrlf = input           
+
+[init]
+    defaultBranch = main
+
+# --- 4. Workflow Optimizations ---
+[pull]
+    rebase = true              # Linear history, no merge bubbles
+
+[push]
+    autoSetupRemote = true     # Auto-track upstream on first push
+    default = simple
+
+[rebase]
+    autoStash = true           # Stash dirty changes automatically
+
+[fetch]
+    prune = true               # Clean up deleted remote branches
+
+# --- 5. Aliases ---
+[alias]
+    s = status
+    co = checkout
+    br = branch
+    ci = commit
+    # A beautiful graph log view
+    lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
