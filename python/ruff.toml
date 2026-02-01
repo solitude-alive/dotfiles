@@ -1,0 +1,54 @@
+# =============================================================================
+# Ruff Global Configuration (dotfiles/python/ruff.toml)
+# This file governs your personal scripts and non-project python files.
+# =============================================================================
+
+# --- Core Behavior ---
+# Assume Python 3.13+ features (e.g., match-case, union types X | Y)
+target-version = "py313"
+
+# Line length: 100 is a modern standard balancing readability and compactness
+line-length = 100
+
+# --- Linter Settings ---
+[lint]
+# Enable preview features to get the latest checks
+preview = true
+
+# Rules to enable (The "Best Practice" Collection)
+select = [
+    "E",    # pycodestyle errors (Standard PEP8 formatting violations)
+    "W",    # pycodestyle warnings
+    "F",    # Pyflakes (Critical errors: undefined variables, unused imports)
+    "I",    # isort (Sorts imports automatically: stdlib -> 3rd party -> local)
+    "B",    # flake8-bugbear (Finds likely bugs/design problems - Highly Recommended)
+    "UP",   # pyupgrade (Auto-upgrades syntax, e.g., "Set[int]" -> "set[int]")
+    "N",    # pep8-naming (Ensures class names are CapWords, functions are snake_case)
+    "SIM",  # flake8-simplify (Suggests simpler logic, e.g., using "return a or b" instead of if/else)
+    "RUF",  # Ruff-specific rules (Powerful checks unique to Ruff)
+    "C4",   # flake8-comprehensions (Optimizes list/dict comprehensions)
+]
+
+# Rules to ignore (Customize based on preference)
+ignore = [
+    "E501", # Ignore line-length violations (Let the formatter handle wrapping, don't error on it)
+]
+
+# --- Formatter Settings (Replaces Black) ---
+[format]
+# Use double quotes for strings (Standard convention)
+quote-style = "double"
+
+# Indent with spaces, not tabs
+indent-style = "space"
+
+# Do not automatically add trailing commas (Cleaner diffs usually prefer "false")
+skip-magic-trailing-comma = false
+
+# Format code snippets inside docstrings (Great for library documentation)
+docstring-code-format = true
+
+# --- Import Sorting Settings ---
+[lint.isort]
+# Separate sections with a blank line
+lines-after-imports = 1
