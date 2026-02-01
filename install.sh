@@ -2,7 +2,7 @@
 
 cd "$(dirname "$0")" || exit 1
 
-TOTAL_MODULES=2
+TOTAL_MODULES=3
 
 echo "Starting Dotfiles Setup..."
 echo "=============================="
@@ -16,8 +16,8 @@ echo ">> [1/$TOTAL_MODULES] Setting up Zsh environment..."
 }
 
 echo "Zsh setup successfully."
-
 echo "=============================="
+
 # --- module 2: Git set up ---
 echo ">> [2/$TOTAL_MODULES] Setting up Git..."
 ./git/install.sh || {
@@ -26,6 +26,16 @@ echo ">> [2/$TOTAL_MODULES] Setting up Git..."
 }
 
 echo "Git setup successfully."
+echo "=============================="
+
+# --- module 3: Python set up ---
+echo ">> [3/$TOTAL_MODULES] Setting up Python environment..."
+./python/install.sh || {
+  echo "Python setup failed!" >&2
+  exit 1
+}
+
+echo "Python setup successfully."
 echo "=============================="
 
 # --- next modules can be added here ---
