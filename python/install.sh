@@ -75,7 +75,7 @@ ensure_tool "pre-commit"
 # ==============================================================================
 CONFIG_DIR="$HOME/.config/ruff"
 
-echo "🔗 Linking global Ruff configuration..."
+echo " Linking global Ruff configuration..."
 if [ ! -d "$CONFIG_DIR" ]; then
   mkdir -p "$CONFIG_DIR"
 fi
