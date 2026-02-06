@@ -11,7 +11,7 @@ This setup will configure your Python development environment with the following
    - `ruff`: An extremely fast Python linter & formatter (replaces Flake8 + Black + isort)
    - `pre-commit`: A framework for managing Git pre-commit hooks
 3. **Global Ruff Configuration**: A curated `ruff.toml` linked to `~/.config/ruff/ruff.toml`, governing personal scripts and non-project Python files
-4. **Project Templates**: Ready-to-use `pyproject.toml` and `pre-commit-config.yaml` templates for new projects
+4. **Project Templates**: Ready-to-use `pyproject.toml`, `pre-commit-config.yaml`, and `ci.yaml` (GitHub Actions) templates for new projects
 
 ## Installation
 
@@ -34,6 +34,7 @@ The script will:
 - `ruff.toml`: Global Ruff configuration (target Python 3.13+, line-length 100, curated rule set)
 - `template/pyproject.toml`: A starter `pyproject.toml` with Ruff, Pytest, and Pyright configurations
 - `template/pre-commit-config.yaml`: A starter pre-commit config with hygiene checks, shell linting, and Ruff hooks
+- `template/ci.yaml`: A GitHub Actions CI workflow that runs Ruff lint and format checks on PRs and pushes
 
 ## Ruff Rules Overview
 
@@ -58,6 +59,28 @@ Copy the templates into your new project as a starting point:
 ```bash
 cp python/template/pyproject.toml /path/to/your/project/pyproject.toml
 cp python/template/pre-commit-config.yaml /path/to/your/project/.pre-commit-config.yaml
+cp python/template/ci.yaml /path/to/your/project/.github/workflows/ci.yaml
 ```
 
 Then customize them to fit your project's needs.
+
+## Current Status
+
+| Category | Tool | Status |
+|----------|------|--------|
+| Package Manager | uv | Installed & auto-updated via `install.sh` |
+| Linter & Formatter | Ruff | Global config + project template + pre-commit hook + CI |
+| Pre-commit Hooks | pre-commit | Template with hygiene, shell, and Ruff hooks |
+| CI/CD | GitHub Actions | Ruff lint & format check on PR/push |
+| Testing | Pytest | Config in `pyproject.toml` template (CI job not yet added) |
+| Type Checking | Pyright | Config in `pyproject.toml` template (CI job not yet added) |
+
+## Future Considerations
+
+Things to consider adding as the setup evolves:
+
+- **CI: Test job** -- Add a `pytest` job to CI so tests run automatically on PR/push (pytest config is already in `pyproject.toml`)
+- **CI: Type checking job** -- Add a `pyright` job to CI for static type checking (pyright config is already in `pyproject.toml`)
+- **CI: Multi-version matrix** -- Test against multiple Python versions using `strategy.matrix`
+- **Coverage reporting** -- Integrate `pytest-cov` and upload coverage reports (e.g., Codecov)
+- **Dependency management template** -- Add a `requirements.txt` or `uv.lock` workflow template for reproducible installs
