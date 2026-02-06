@@ -1,4 +1,7 @@
 # Dotfiles
+
+![CI](https://github.com/solitude-alive/dotfiles/actions/workflows/ci.yaml/badge.svg)
+
 Personal configuration files for various applications and tools.
 
 ## Installation
