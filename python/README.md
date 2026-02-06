@@ -34,7 +34,7 @@ The script will:
 - `ruff.toml`: Global Ruff configuration (target Python 3.13+, line-length 100, curated rule set)
 - `template/pyproject.toml`: A starter `pyproject.toml` with Ruff, Pytest, and Pyright configurations
 - `template/pre-commit-config.yaml`: A starter pre-commit config with hygiene checks, shell linting, and Ruff hooks
-- `template/ci.yaml`: A GitHub Actions CI workflow that runs Ruff lint and format checks on PRs and pushes
+- `template/ci.yaml`: A GitHub Actions CI workflow that runs all pre-commit hooks on PRs and pushes
 
 ## Ruff Rules Overview
 
@@ -71,7 +71,7 @@ Then customize them to fit your project's needs.
 | Package Manager | uv | Installed & auto-updated via `install.sh` |
 | Linter & Formatter | Ruff | Global config + project template + pre-commit hook + CI |
 | Pre-commit Hooks | pre-commit | Template with hygiene, shell, and Ruff hooks |
-| CI/CD | GitHub Actions | Ruff lint & format check on PR/push |
+| CI/CD | GitHub Actions | Runs all pre-commit hooks on PR/push |
 | Testing | Pytest | Config in `pyproject.toml` template (CI job not yet added) |
 | Type Checking | Pyright | Config in `pyproject.toml` template (CI job not yet added) |
 
