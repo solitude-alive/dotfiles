@@ -47,8 +47,3 @@ skip-magic-trailing-comma = false
 
 # Format code snippets inside docstrings (Great for library documentation)
 docstring-code-format = true
-
-# --- Import Sorting Settings ---
-[lint.isort]
-# Separate sections with a blank line
-lines-after-imports = 1
