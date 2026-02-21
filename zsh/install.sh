@@ -28,6 +28,8 @@ else
   if [[ "$SHELL" != "$(which zsh)" ]]; then
     echo "zsh is not the default shell, setting it as the default shell..."
     chsh -s "$(which zsh)"
+  else
+    echo "zsh is already the default shell"
   fi
 fi
 
