@@ -6,6 +6,31 @@ ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
 
 echo "Starting Zsh environment setup..."
 
+# --- 1. check if zsh is installed ---
+if ! command which zsh &>/dev/null; then
+  echo "zsh is not installed, installing..."
+  # check os is macos or linux
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    echo "macos detected, installing zsh..."
+    brew install zsh
+  elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    echo "linux detected, installing zsh..."
+    # install zsh using apt
+    sudo apt-get update
+    sudo apt-get install -y zsh
+  else
+    echo "unsupported os detected, installing zsh..."
+    exit 1
+  fi
+else
+  echo "zsh is already installed"
+  # check if zsh is the default shell
+  if [[ "$SHELL" != "$(which zsh)" ]]; then
+    echo "zsh is not the default shell, setting it as the default shell..."
+    chsh -s "$(which zsh)"
+  fi
+fi
+
 # --- 1. install Oh My Zsh ---
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
   echo "cloning Oh My Zsh..."
