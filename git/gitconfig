@@ -27,6 +27,9 @@
 [pull]
     rebase = true              # Linear history, no merge bubbles
 
+[merge]
+    ff = only                  # Only allow fast-forward merges, reject non-ff
+
 [push]
     autoSetupRemote = true     # Auto-track upstream on first push
     default = simple
