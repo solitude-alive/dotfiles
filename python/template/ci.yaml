@@ -1,5 +1,8 @@
+# CI template for Python projects.
+
 name: ci
 
+# Triggers on push and PR to main/dev branches.
 on:
   pull_request:
     branches: [ main, dev ]
@@ -7,6 +10,8 @@ on:
     branches: [ main, dev ]
 
 jobs:
+  # Runs all pre-commit hooks (linting, formatting, hygiene checks).
+  # Uses pre-commit/action to cache hook environments automatically.
   pre-commit:
     runs-on: ubuntu-latest
     steps:
