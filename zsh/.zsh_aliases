@@ -13,3 +13,18 @@ alias mv="mv -i"
 
 # python3
 alias python='python3'
+
+# caffeinate - prevent Mac from sleeping
+alias coffee="caffeinate -ims"                                                           # keep awake, display can sleep
+alias coffee-espresso="caffeinate -dims"                                                 # keep awake, display stays on
+alias coffee-short="echo '☕ Stay awake for 30 min' && caffeinate -ims -t 1800"           # 30 min
+alias coffee-tall="echo '☕ Stay awake for 1 hour' && caffeinate -ims -t 3600"            # 1 hour
+alias coffee-grande="echo '☕ Stay awake for 2 hours' && caffeinate -ims -t 7200"         # 2 hours
+alias coffee-venti="echo '☕ Stay awake for 4 hours' && caffeinate -ims -t 14400"         # 4 hours
+alias coffee-decaf="pmset -g assertions"                                                 # check sleep assertions
+
+# custom minutes: coffee-brew 45
+coffee-brew() {
+  echo "☕ Stay awake for $1 min"
+  caffeinate -ims -t $(( $1 * 60 ))
+}
