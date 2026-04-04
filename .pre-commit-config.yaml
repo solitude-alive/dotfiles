@@ -35,7 +35,7 @@ repos:
 
   # Auto-formatting: Standardize shell script style
   - repo: https://github.com/scop/pre-commit-shfmt
-    rev: v3.12.0-2
+    rev: v3.13.0-1
     hooks:
       - id: shfmt
         args: ["-w", "-i", "2"] # Write changes to file (-w), indent with 2 spaces (-i 2)
@@ -47,7 +47,7 @@ repos:
   # Chosen for speed and minimal dependencies in a dotfiles context.
   # Covers flake8, isort, pyupgrade, etc.
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.7
+    rev: v0.15.9
     hooks:
       - id: ruff
         args: [ --fix ]
