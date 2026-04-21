@@ -6,34 +6,61 @@ ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
 
 echo "Starting Zsh environment setup..."
 
-# --- 1. check if zsh is installed ---
-if ! command which zsh &>/dev/null; then
+# --- 1. Ensure zsh is installed ---
+# command -v is POSIX and works on minimal images where `which` is missing.
+if ! command -v zsh &>/dev/null; then
   echo "zsh is not installed, installing..."
-  # check os is macos or linux
   if [[ "$OSTYPE" == "darwin"* ]]; then
-    echo "macos detected, installing zsh..."
-    brew install zsh
+    echo "macos detected, installing zsh via brew..."
+    brew install zsh || {
+      echo "Failed to install zsh via brew" >&2
+      exit 1
+    }
   elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    echo "linux detected, installing zsh..."
-    # install zsh using apt
-    sudo apt-get update
-    sudo apt-get install -y zsh
+    echo "linux detected, installing zsh via apt..."
+    if ! { sudo apt-get update && sudo apt-get install -y zsh; }; then
+      echo "Failed to install zsh via apt" >&2
+      exit 1
+    fi
   else
-    echo "unsupported os detected, installing zsh..."
+    echo "unsupported os detected: $OSTYPE" >&2
     exit 1
   fi
 else
   echo "zsh is already installed"
-  # check if zsh is the default shell
-  if [[ "$SHELL" != "$(which zsh)" ]]; then
-    echo "zsh is not the default shell, setting it as the default shell..."
-    sudo chsh -s "$(which zsh)" "$USER"
-  else
-    echo "zsh is already the default shell"
+fi
+
+# --- 2. Ensure zsh is the default login shell ---
+# Runs for both "just installed" and "was already installed" paths, so a
+# fresh-machine setup actually switches the default shell (previously this
+# step was nested in the 'already installed' branch and skipped on first run).
+ZSH_PATH="$(command -v zsh)"
+# SUDO_USER is set by sudo to the invoking user's name; fall back to $USER.
+# This makes the target correct whether the script is run as the user
+# directly, or via `sudo ./install.sh` (where $USER would be "root").
+TARGET_USER="${SUDO_USER:-$USER}"
+
+if [[ "$SHELL" == "$ZSH_PATH" ]]; then
+  echo "zsh is already the default shell"
+else
+  # On Linux, chsh rejects shells that are not listed in /etc/shells (common
+  # when zsh was installed from a non-system path like Homebrew/linuxbrew).
+  if [[ "$OSTYPE" == "linux-gnu"* ]] && ! grep -qxF "$ZSH_PATH" /etc/shells; then
+    echo "Registering $ZSH_PATH in /etc/shells..."
+    echo "$ZSH_PATH" | sudo tee -a /etc/shells >/dev/null
+  fi
+
+  echo "Setting zsh as the default shell for $TARGET_USER..."
+  # Using `sudo chsh` (running as root) skips the user-password PAM prompt,
+  # which would hang non-interactive environments (CI, containers, piped
+  # bootstrap scripts). On passwordless-sudo hosts this is fully automatic.
+  if ! sudo chsh -s "$ZSH_PATH" "$TARGET_USER"; then
+    echo "Warning: could not change default shell automatically." >&2
+    echo "         Retry manually: sudo chsh -s $ZSH_PATH $TARGET_USER" >&2
   fi
 fi
 
-# --- 1. install Oh My Zsh ---
+# --- 3. Install Oh My Zsh ---
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
   echo "cloning Oh My Zsh..."
   # Use --unattended to avoid entering zsh immediately after installation, which can interrupt the script
@@ -42,7 +69,7 @@ else
   echo "Oh My Zsh is already installed"
 fi
 
-# --- 2. download themes powerlevel10k ---
+# --- 4. Download Powerlevel10k theme ---
 if [ ! -d "$ZSH_CUSTOM/themes/powerlevel10k" ]; then
   echo "downloading Powerlevel10k theme..."
   git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$ZSH_CUSTOM/themes/powerlevel10k"
@@ -50,7 +77,7 @@ else
   echo "Powerlevel10k theme is already installed"
 fi
 
-# --- 3. download plugins ---
+# --- 5. Download plugins ---
 echo "Installing/updating plugins..."
 # Plugin: Auto Suggestions
 if [ ! -d "$ZSH_CUSTOM/plugins/zsh-autosuggestions" ]; then
@@ -62,7 +89,7 @@ if [ ! -d "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting" ]; then
   git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting"
 fi
 
-# --- 4. link platform-specific configuration files ---
+# --- 6. Link platform-specific configuration files ---
 echo "Linking configuration files..."
 
 # pick source files by OS
@@ -99,7 +126,7 @@ fi
 ln -sf "$ALIASES_SRC" "$HOME/.zsh_aliases"
 ln -sf "$P10K_SRC" "$HOME/.p10k.zsh"
 
-# --- 5. create .zshrc ---
+# --- 7. Create .zshrc entrypoint ---
 ZSHRC_FILE="$HOME/.zshrc"
 INIT_FILE="$CURRENT_DIR/init.zsh"
 
@@ -125,7 +152,7 @@ else
   echo "New entry point generated."
 fi
 
-# --- 6. local specific ---
+# --- 8. Local-only config file ---
 # We agree that the personalized configuration file is named .zshrc.local
 if [ ! -f "$HOME/.zshrc.local" ]; then
   echo "no local config found, creating an empty ~/.zshrc.local"
