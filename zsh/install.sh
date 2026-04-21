@@ -27,7 +27,7 @@ else
   # check if zsh is the default shell
   if [[ "$SHELL" != "$(which zsh)" ]]; then
     echo "zsh is not the default shell, setting it as the default shell..."
-    chsh -s "$(which zsh)"
+    sudo chsh -s "$(which zsh)" "$USER"
   else
     echo "zsh is already the default shell"
   fi
