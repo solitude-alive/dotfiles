@@ -27,11 +27,21 @@ repos:
   # ------------------------------------------------------------------
   # 2. Shell Scripting Tools
   # ------------------------------------------------------------------
+  # Syntax check: catch parse errors before they hit CI (bash -n is a dry-parse)
+  - repo: local
+    hooks:
+      - id: bash-syntax
+        name: bash syntax check (bash -n)
+        entry: bash -n
+        language: system
+        files: '\.sh$'
+
   # Static Analysis: Checks for logic errors (e.g., unquoted variables)
   - repo: https://github.com/shellcheck-py/shellcheck-py
     rev: v0.11.0.1
     hooks:
       - id: shellcheck
+        exclude: '^tests/.*\.bats$' # .bats syntax is not pure bash
 
   # Auto-formatting: Standardize shell script style
   - repo: https://github.com/scop/pre-commit-shfmt
@@ -39,6 +49,7 @@ repos:
     hooks:
       - id: shfmt
         args: ["-w", "-i", "2"] # Write changes to file (-w), indent with 2 spaces (-i 2)
+        exclude: '^tests/.*\.bats$' # bats @test blocks are not standard shell syntax
 
   # ------------------------------------------------------------------
   # 3. Python Tools
