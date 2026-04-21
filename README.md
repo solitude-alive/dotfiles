@@ -1,6 +1,8 @@
 # Dotfiles
 
-![CI](https://github.com/solitude-alive/dotfiles/actions/workflows/ci.yaml/badge.svg)
+[![Lint](https://img.shields.io/github/actions/workflow/status/solitude-alive/dotfiles/lint.yaml?branch=main&label=lint&logo=githubactions&logoColor=white)](https://github.com/solitude-alive/dotfiles/actions/workflows/lint.yaml)
+[![Linux](https://img.shields.io/github/actions/workflow/status/solitude-alive/dotfiles/test-linux.yaml?branch=main&label=Linux&logo=linux&logoColor=white)](https://github.com/solitude-alive/dotfiles/actions/workflows/test-linux.yaml)
+[![macOS](https://img.shields.io/github/actions/workflow/status/solitude-alive/dotfiles/test-macos.yaml?branch=main&label=macOS&logo=apple&logoColor=white)](https://github.com/solitude-alive/dotfiles/actions/workflows/test-macos.yaml)
 
 Personal configuration files for various applications and tools.
 
