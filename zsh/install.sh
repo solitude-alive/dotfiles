@@ -62,8 +62,28 @@ if [ ! -d "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting" ]; then
   git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting"
 fi
 
-# --- 4. link common configuration files ---
-echo "Linking common configuration files..."
+# --- 4. link platform-specific configuration files ---
+echo "Linking configuration files..."
+
+# pick source files by OS
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  ALIASES_SRC="$CURRENT_DIR/.zsh_aliases.mac"
+  P10K_SRC="$CURRENT_DIR/.p10k.mac.zsh"
+elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+  ALIASES_SRC="$CURRENT_DIR/.zsh_aliases.linux"
+  P10K_SRC="$CURRENT_DIR/.p10k.linux.zsh"
+else
+  echo "unsupported os for config linking: $OSTYPE" >&2
+  exit 1
+fi
+
+# sanity check: source files must exist
+for src in "$ALIASES_SRC" "$P10K_SRC"; do
+  if [ ! -f "$src" ]; then
+    echo "missing config file: $src" >&2
+    exit 1
+  fi
+done
 
 # backup .zsh_aliases
 if [ -f "$HOME/.zsh_aliases" ] && [ ! -L "$HOME/.zsh_aliases" ]; then
@@ -75,9 +95,9 @@ if [ -f "$HOME/.p10k.zsh" ] && [ ! -L "$HOME/.p10k.zsh" ]; then
   mv "$HOME/.p10k.zsh" "$HOME/.p10k.zsh.backup.$(date +%s)"
 fi
 
-## Create a symlink to use the common configuration from your repository
-ln -sf "$CURRENT_DIR/.zsh_aliases" "$HOME/.zsh_aliases"
-ln -sf "$CURRENT_DIR/.p10k.zsh" "$HOME/.p10k.zsh"
+## Create a symlink to use the platform-specific configuration from your repository
+ln -sf "$ALIASES_SRC" "$HOME/.zsh_aliases"
+ln -sf "$P10K_SRC" "$HOME/.p10k.zsh"
 
 # --- 5. create .zshrc ---
 ZSHRC_FILE="$HOME/.zshrc"
