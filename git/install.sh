@@ -59,22 +59,46 @@ fi
 CURRENT_NAME=$(git config --global user.name)
 CURRENT_EMAIL=$(git config --global user.email)
 
+# Detect if we can prompt the user. Non-interactive scenarios
+# include: CI (CI env var), piped stdin, SSH without TTY, containers
+# bootstrapped via a script. In those cases we skip the prompts
+# gracefully instead of reading EOF and saving empty values.
+is_interactive() {
+  [ -t 0 ] && [ -z "${CI:-}" ]
+}
+
 # 3.1 Setup Name
 if [ -z "$CURRENT_NAME" ]; then
-  read -r -p "   > No identity found. Enter your Git Name (e.g., John Doe): " INPUT_NAME
-  # Write specifically to the local file
-  git config -f "$LOCAL_CONFIG_FILE" user.name "$INPUT_NAME"
-  echo "   > Name saved to .gitconfig.local"
+  if is_interactive; then
+    read -r -p "   > No identity found. Enter your Git Name (e.g., John Doe): " INPUT_NAME
+    if [ -n "$INPUT_NAME" ]; then
+      git config -f "$LOCAL_CONFIG_FILE" user.name "$INPUT_NAME"
+      echo "   > Name saved to .gitconfig.local"
+    else
+      echo "   > Empty input, skipping name setup."
+    fi
+  else
+    echo "   > Non-interactive environment, skipping name setup."
+    echo "   > Set later with: git config --global user.name 'Your Name'"
+  fi
 else
   echo "   > Name is set: $CURRENT_NAME"
 fi
 
 # 3.2 Setup Email
 if [ -z "$CURRENT_EMAIL" ]; then
-  read -r -p "   > No identity found. Enter your Git Email: " INPUT_EMAIL
-  # Write specifically to the local file
-  git config -f "$LOCAL_CONFIG_FILE" user.email "$INPUT_EMAIL"
-  echo "   > Email saved to .gitconfig.local"
+  if is_interactive; then
+    read -r -p "   > No identity found. Enter your Git Email: " INPUT_EMAIL
+    if [ -n "$INPUT_EMAIL" ]; then
+      git config -f "$LOCAL_CONFIG_FILE" user.email "$INPUT_EMAIL"
+      echo "   > Email saved to .gitconfig.local"
+    else
+      echo "   > Empty input, skipping email setup."
+    fi
+  else
+    echo "   > Non-interactive environment, skipping email setup."
+    echo "   > Set later with: git config --global user.email 'you@example.com'"
+  fi
 else
   echo "   > Email is set: $CURRENT_EMAIL"
 fi
