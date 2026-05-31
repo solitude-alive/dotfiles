@@ -20,10 +20,11 @@ configs sit side by side.
 ```
 editors/
 ├── editors.sh    # wrapper -> editors.py
-├── editors.py    # entry: snapshot | check | apply
+├── editors.py    # entrypoint
 ├── core.py       # shared helpers (paths, json, ignore, backup)
-├── syncutil.py   # shared diff/dry-run/force/text-tree sync flow
-├── snapshot.py   # snapshot + check
+├── sync/         # shared diff/prompt/text/json/tree sync helpers
+├── snapshot.py   # snapshot (editor -> repo)
+├── check.py      # drift reporting
 ├── apply.py      # apply (clean mirror)
 ├── annotations.md
 ├── vscode/   settings.json, extensions.txt
@@ -33,12 +34,12 @@ editors/
 ## Usage
 
 ```bash
-./editors.sh snapshot          # interactive: review each diff, then write (editor -> repo)
+./editors.sh snapshot          # interactive: review settings keys/extensions, then write
 ./editors.sh snapshot --dry-run  # show what would change, write nothing
 ./editors.sh snapshot --force    # no prompts; refresh repo from this machine
 ./editors.sh snapshot cursor     # restrict to one editor (vscode | cursor)
 ./editors.sh check             # exit 0 = in sync, 1 = drift (pre-commit/CI friendly)
-./editors.sh apply             # interactive: review each diff, then write (repo -> editor)
+./editors.sh apply             # interactive: review settings keys/extensions, then write
 ./editors.sh apply --dry-run   # show what would change, write nothing
 ./editors.sh apply --force     # no prompts; make this machine a clean mirror
 ./editors.sh apply cursor      # restrict to one editor (vscode | cursor)

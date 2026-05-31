@@ -5,6 +5,7 @@ import argparse
 import sys
 
 import apply as apply_mod
+import check as check_mod
 import snapshot as snap
 
 
@@ -29,7 +30,7 @@ def main() -> int:
     if args.cmd == "snapshot":
         return snap.snapshot(args)
     if args.cmd == "check":
-        return snap.check()
+        return check_mod.check()
     return apply_mod.apply(args)
 
 

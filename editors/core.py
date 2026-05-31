@@ -53,14 +53,21 @@ def dump_settings(data: dict) -> str:
     return json.dumps(data, indent=4, ensure_ascii=False) + "\n"
 
 
-def redacted_settings(path: Path) -> str | None:
-    """Live settings as text, with IGNORE keys stripped (what the repo stores)."""
+def redacted_settings_data(path: Path) -> dict | None:
+    """Live settings as data, with IGNORE keys stripped (what the repo stores)."""
     data = load_json(path)
-    if data is None:
+    if not isinstance(data, dict):
         return None
+    data = dict(data)
     for key in IGNORE:
         data.pop(key, None)
-    return dump_settings(data)
+    return data
+
+
+def redacted_settings(path: Path) -> str | None:
+    """Live settings as text, with IGNORE keys stripped (what the repo stores)."""
+    data = redacted_settings_data(path)
+    return dump_settings(data) if data is not None else None
 
 
 def live_extensions(extdir: str) -> str | None:

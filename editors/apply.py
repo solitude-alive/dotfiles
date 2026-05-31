@@ -10,19 +10,20 @@ from core import (
     IGNORE,
     REPO,
     backup,
-    dump_settings,
     live_extensions,
     load_json,
     user_dir,
 )
-from syncutil import approve, sync_text, sync_tree
+from sync import approve, sync_json_object, sync_text, sync_tree
 
 
 def apply_settings(src, dst, args) -> None:
-    live, repo = load_json(dst) or {}, load_json(src) or {}
+    live, repo = load_json(dst), load_json(src)
+    live = live if isinstance(live, dict) else {}
+    repo = repo if isinstance(repo, dict) else {}
     preserved = {k: live[k] for k in IGNORE if k in live}
-    target = dump_settings({**preserved, **repo})  # repo wins, IGNORE kept
-    sync_text(
+    target = {**preserved, **repo}  # repo wins, IGNORE kept
+    sync_json_object(
         "settings.json",
         dst,
         target,
