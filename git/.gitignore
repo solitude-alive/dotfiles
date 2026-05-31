@@ -1,0 +1,32 @@
+# macos
+.DS_Store
+
+# vscode, idea
+.vscode/
+.idea/
+
+# python
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+dist/
+build/
+*.egg-info/
+.venv/
+venv/
+
+# ruff
+.ruff_cache/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# claude, cursor
+.cursor/
+.claude/
+
+# log
+log/
+logs/
