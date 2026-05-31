@@ -1,0 +1,23 @@
+{
+    "workbench.editorAssociations": {},
+    "workbench.activityBar.orientation": "vertical",
+    "files.autoSave": "afterDelay",
+    "remote.autoForwardPortsSource": "hybrid",
+    "[python]": {
+        "diffEditor.ignoreTrimWhitespace": false,
+        "editor.defaultColorDecorators": "never"
+    },
+    "cursor.cpp.enablePartialAccepts": true,
+    "cursor.cpp.disabledLanguages": [
+        "plaintext"
+    ],
+    "editor.formatOnSave": true,
+    "terminal.integrated.env.linux": {},
+    "[shellscript]": {
+        "files.eol": "\n",
+        "editor.defaultColorDecorators": "never"
+    },
+    "claudeCode.preferredLocation": "panel",
+    "claudeCode.environmentVariables": [],
+    "window.autoDetectColorScheme": false
+}

@@ -28,6 +28,7 @@ This script will create symbolic links for the configuration files in your home 
 - `zsh`: Zsh shell configuration, including themes and plugins.
 - `git`: Git configuration, including gitconfig (rebase-first workflow, fast-forward only merge, LFS, aliases).
 - `python`: Python configuration, including ruff, pre-commit hooks, and ci.yaml.
+- `editors`: Read-only audit snapshot of VS Code / Cursor config (settings, keybindings, extensions). Refresh manually with `editors/snapshot.sh`, check drift with `editors/check.sh`.
 
 ## pre-commit
 
