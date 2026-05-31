@@ -2,5 +2,6 @@
     "files.autoSave": "afterDelay",
     "update.showReleaseNotes": false,
     "github.copilot.chat.edits.temporalContext.enabled": true,
-    "chatgpt.composerEnterBehavior": "enter"
+    "chatgpt.composerEnterBehavior": "enter",
+    "vim.enable": false
 }
