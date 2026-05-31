@@ -9,8 +9,22 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parent
 HOME = Path.home()
 
-# Machine-local keys: redacted on snapshot, preserved on apply.
-IGNORE = {"remote.SSH.remotePlatform"}
+
+def load_json_file(path: Path):
+    try:
+        return json.loads(path.read_text())
+    except Exception:
+        return None
+
+
+def load_ignore() -> tuple[set[str], set[str]]:
+    data = load_json_file(REPO / "ignore.json") or {}
+    if not isinstance(data, dict):
+        return set(), set()
+    return set(data.get("settings", [])), set(data.get("extensions", []))
+
+
+SETTINGS_IGNORE, EXTENSIONS_IGNORE = load_ignore()
 
 # name -> (support dir under config base, extensions dir under HOME, CLI name)
 EDITORS = {
@@ -31,10 +45,7 @@ def user_dir(support: str) -> Path:
 
 
 def load_json(path: Path):
-    try:
-        return json.loads(path.read_text())
-    except Exception:
-        return None
+    return load_json_file(path)
 
 
 def read(path: Path) -> str | None:
@@ -54,18 +65,20 @@ def dump_settings(data: dict) -> str:
 
 
 def redacted_settings_data(path: Path) -> dict | None:
-    """Live settings as data, with IGNORE keys stripped (what the repo stores)."""
+    """Settings data with ignored keys stripped (what the repo stores)."""
     data = load_json(path)
     if not isinstance(data, dict):
         return None
-    data = dict(data)
-    for key in IGNORE:
-        data.pop(key, None)
-    return data
+    return tracked_settings_data(data)
+
+
+def tracked_settings_data(data: dict) -> dict:
+    """Copy settings data without ignored keys."""
+    return {key: value for key, value in data.items() if key not in SETTINGS_IGNORE}
 
 
 def redacted_settings(path: Path) -> str | None:
-    """Live settings as text, with IGNORE keys stripped (what the repo stores)."""
+    """Live settings as text, with ignored keys stripped (what the repo stores)."""
     data = redacted_settings_data(path)
     return dump_settings(data) if data is not None else None
 
@@ -74,7 +87,18 @@ def live_extensions(extdir: str) -> str | None:
     data = load_json(HOME / extdir / "extensions" / "extensions.json")
     if data is None:
         return None
-    return "\n".join(sorted({e["identifier"]["id"] for e in data})) + "\n"
+    return format_extensions({e["identifier"]["id"] for e in data})
+
+
+def read_extensions(path: Path) -> str | None:
+    text = read(path)
+    if text is None:
+        return None
+    return format_extensions({x.strip() for x in text.splitlines() if x.strip()})
+
+
+def format_extensions(ids: set[str]) -> str:
+    return "\n".join(sorted(ids - EXTENSIONS_IGNORE)) + "\n"
 
 
 def backup(path: Path) -> None:

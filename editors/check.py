@@ -1,5 +1,6 @@
 """check: report drift between repo snapshot and live editor config."""
 
+import json
 from pathlib import Path
 
 from core import (
@@ -7,9 +8,12 @@ from core import (
     EDITORS,
     REPO,
     live_extensions,
+    load_json,
     read,
     read_copy,
-    redacted_settings,
+    read_extensions,
+    redacted_settings_data,
+    tracked_settings_data,
     user_dir,
 )
 from sync import rel_entries, rel_files, show_diff
@@ -31,6 +35,23 @@ def compare(label: str, repo: str | None, live: str | None) -> bool:
         return True
     print(f"    ok    {label}")
     return False
+
+
+def compare_settings(label: str, repo_path: Path, live_path: Path) -> bool:
+    repo = load_json(repo_path) if repo_path.is_file() else None
+    live = redacted_settings_data(live_path) if live_path.is_file() else None
+
+    if repo is not None and not isinstance(repo, dict):
+        return compare(label, read(repo_path), _dump_settings_for_compare(live or {}))
+    repo = tracked_settings_data(repo) if isinstance(repo, dict) else None
+
+    repo_text = _dump_settings_for_compare(repo) if repo is not None else None
+    live_text = _dump_settings_for_compare(live) if live is not None else None
+    return compare(label, repo_text, live_text)
+
+
+def _dump_settings_for_compare(data: dict) -> str:
+    return json.dumps(data, indent=4, ensure_ascii=False, sort_keys=True) + "\n"
 
 
 def compare_tree(label: str, repo_dir: Path, live_dir: Path) -> bool:
@@ -66,16 +87,15 @@ def check() -> int:
         if not src.is_dir():
             print("    (not installed, skipping)")
             continue
-        live_s = (
-            redacted_settings(src / "settings.json") if (src / "settings.json").is_file() else None
+        drift |= compare_settings(
+            "settings.json", REPO / name / "settings.json", src / "settings.json"
         )
-        drift |= compare("settings.json", read(REPO / name / "settings.json"), live_s)
         for fname in COPY_FILES:
             drift |= compare(fname, read(REPO / name / fname), read_copy(src / fname))
         drift |= compare_tree("snippets/", REPO / name / "snippets", src / "snippets")
         drift |= compare(
             "extensions.txt",
-            read(REPO / name / "extensions.txt"),
+            read_extensions(REPO / name / "extensions.txt"),
             live_extensions(extdir),
         )
     print()

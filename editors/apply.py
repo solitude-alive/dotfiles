@@ -7,11 +7,13 @@ import subprocess
 from core import (
     COPY_FILES,
     EDITORS,
-    IGNORE,
     REPO,
+    SETTINGS_IGNORE,
     backup,
     live_extensions,
     load_json,
+    read_extensions,
+    tracked_settings_data,
     user_dir,
 )
 from sync import approve, sync_json_object, sync_text, sync_tree
@@ -21,8 +23,8 @@ def apply_settings(src, dst, args) -> None:
     live, repo = load_json(dst), load_json(src)
     live = live if isinstance(live, dict) else {}
     repo = repo if isinstance(repo, dict) else {}
-    preserved = {k: live[k] for k in IGNORE if k in live}
-    target = {**preserved, **repo}  # repo wins, IGNORE kept
+    preserved = {k: live[k] for k in SETTINGS_IGNORE if k in live}
+    target = {**preserved, **tracked_settings_data(repo)}  # repo wins, ignored kept
     sync_json_object(
         "settings.json",
         dst,
@@ -64,11 +66,7 @@ def apply_snippets(src_dir, dst_dir, args) -> None:
 
 
 def apply_extensions(cli, listfile, extdir, args) -> None:
-    repo_ids = (
-        {x.strip() for x in listfile.read_text().splitlines() if x.strip()}
-        if listfile.is_file()
-        else set()
-    )
+    repo_ids = set((read_extensions(listfile) or "").split()) if listfile.is_file() else set()
     live_ids = set((live_extensions(extdir) or "").split())
     to_install = sorted(repo_ids - live_ids)
     to_remove = sorted(live_ids - repo_ids)

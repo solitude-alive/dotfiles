@@ -6,9 +6,10 @@ What each captured key means. Raw JSON stays comment-free so diffs stay clean.
 
 | key | value | meaning |
 |-----|-------|---------|
-| `workbench.editorAssociations` | `{}` | file→editor map; empty = default |
-| `claudeCode.preferredLocation` | `panel` | Claude Code UI docked in panel |
 | `files.autoSave` | `afterDelay` | auto-save after a short delay |
+| `update.showReleaseNotes` | `false` | hide extension/product release notes popups |
+| `github.copilot.chat.edits.temporalContext.enabled` | `true` | Copilot edits can use temporal context |
+| `chatgpt.composerEnterBehavior` | `enter` | Enter sends in ChatGPT Composer |
 
 ## cursor/settings.json
 
@@ -16,7 +17,9 @@ What each captured key means. Raw JSON stays comment-free so diffs stay clean.
 |-----|-------|---------|
 | `workbench.editorAssociations` | `{}` | file→editor map; empty = default |
 | `workbench.activityBar.orientation` | `vertical` | activity bar orientation |
-| `remote.SSH.remotePlatform` | — | **redacted** from snapshot (internal host names) |
+| `remote.SSH.remotePlatform` | — | ignored via `ignore.json` (internal host names) |
+| `gitlens.ai.*.model` | — | ignored via `ignore.json` (provider/model choice changes often) |
+| `gitlens.modes` | — | ignored via `ignore.json` (generated GitLens mode defaults) |
 | `files.autoSave` | `afterDelay` | auto-save after a delay |
 | `remote.autoForwardPortsSource` | `hybrid` | port auto-forward detection (process + output) |
 | `[python]` | object | Python: keep diff whitespace, no inline color chips |
@@ -39,7 +42,7 @@ What each captured key means. Raw JSON stays comment-free so diffs stay clean.
 
 ## Extensions
 
-Ids live in `vscode/extensions.txt` (14) and `cursor/extensions.txt` (18); the
+Ids live in `vscode/extensions.txt` (15) and `cursor/extensions.txt` (19); the
 ids are self-describing. Cursor-only additions: `anysphere.cursorpyright`,
 `anysphere.remote-ssh`, `ms-python.mypy-type-checker`, `ms-python.pylint`,
 `timonwong.shellcheck`, `yzhang.markdown-all-in-one`, `donjayamanne.githistory`,
@@ -48,10 +51,10 @@ ids are self-describing. Cursor-only additions: `anysphere.cursorpyright`,
 ## Applying (apply.sh)
 
 `apply.sh` writes the repo back onto a machine (repo → editor) as a **clean
-mirror**: repo-tracked keys win, the IGNORE keys above (`remote.SSH.remotePlatform`)
-are preserved verbatim because they are machine-local, and any extra keys / files
-/ extensions not in the repo are reviewed for removal (default keep; `--force`
-removes). Live files are backed up to `<file>.bak.<timestamp>` first. This keeps
+mirror**: repo-tracked keys win, ignored settings/extensions in `ignore.json`
+are preserved verbatim, and any extra keys / files / extensions not in the repo
+or ignore list are reviewed for removal (default keep; `--force` removes).
+Live files are backed up to `<file>.backup.<timestamp>` first. This keeps
 the apply ↔ snapshot loop drift-free: after `apply.sh --force`, a fresh snapshot
 matches the repo.
 

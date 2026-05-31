@@ -22,6 +22,7 @@ editors/
 ├── editors.sh    # wrapper -> editors.py
 ├── editors.py    # entrypoint
 ├── core.py       # shared helpers (paths, json, ignore, backup)
+├── ignore.json   # settings/extensions excluded from repo sync
 ├── sync/         # shared diff/prompt/text/json/tree sync helpers
 ├── snapshot.py   # snapshot (editor -> repo)
 ├── check.py      # drift reporting
@@ -45,11 +46,12 @@ editors/
 ./editors.sh apply cursor      # restrict to one editor (vscode | cursor)
 ```
 
-`apply` builds a **clean mirror**: repo-tracked keys/files win, machine-local keys
-in IGNORE (`remote.SSH.remotePlatform`) are kept, and anything extra (keys, files,
-extensions not in the repo) is offered for removal. Live files/directories are
+`apply` builds a **clean mirror**: repo-tracked keys/files win, keys/extensions
+listed in `ignore.json` are kept local, and anything extra (keys, files,
+extensions not in the repo or ignore list) is offered for removal. Live files/directories are
 backed up to `<name>.backup.<timestamp>` before any write; extensions
 install/uninstall via the editor CLI.
 
-Notes: extension lists store ids only; `remote.SSH.remotePlatform` is redacted
-(internal host names); requires `python3`.
+Notes: extension lists store ids only. `ignore.json` currently redacts
+`remote.SSH.remotePlatform` and GitLens generated/model settings from snapshots
+and preserves them on apply; requires `python3`.

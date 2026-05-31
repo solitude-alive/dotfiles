@@ -1,0 +1,10 @@
+{
+    "settings": [
+        "gitlens.ai.gitkraken.model",
+        "gitlens.ai.model",
+        "gitlens.ai.vscode.model",
+        "gitlens.modes",
+        "remote.SSH.remotePlatform"
+    ],
+    "extensions": []
+}
