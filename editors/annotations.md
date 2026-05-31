@@ -45,6 +45,16 @@ ids are self-describing. Cursor-only additions: `anysphere.cursorpyright`,
 `timonwong.shellcheck`, `yzhang.markdown-all-in-one`, `donjayamanne.githistory`,
 `ms-azuretools.vscode-docker`.
 
+## Applying (apply.sh)
+
+`apply.sh` writes the repo back onto a machine (repo → editor) as a **clean
+mirror**: repo-tracked keys win, the IGNORE keys above (`remote.SSH.remotePlatform`)
+are preserved verbatim because they are machine-local, and any extra keys / files
+/ extensions not in the repo are reviewed for removal (default keep; `--force`
+removes). Live files are backed up to `<file>.bak.<timestamp>` first. This keeps
+the apply ↔ snapshot loop drift-free: after `apply.sh --force`, a fresh snapshot
+matches the repo.
+
 ## Not captured
 
 Binary/ephemeral state (`state.vscdb`, `workspaceStorage/`, `History/`, UI
