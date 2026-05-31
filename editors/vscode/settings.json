@@ -3,5 +3,5 @@
     "update.showReleaseNotes": false,
     "github.copilot.chat.edits.temporalContext.enabled": true,
     "chatgpt.composerEnterBehavior": "enter",
-    "vim.enable": false
+    "vim.disableExtension": true
 }
