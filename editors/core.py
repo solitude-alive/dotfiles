@@ -72,6 +72,14 @@ def live_extensions(extdir: str) -> str | None:
 
 def backup(path: Path) -> None:
     if path.exists():
-        bak = path.with_name(f"{path.name}.backup.{int(time.time())}")
-        shutil.copy2(path, bak)
+        stamp = int(time.time())
+        bak = path.with_name(f"{path.name}.backup.{stamp}")
+        n = 1
+        while bak.exists():
+            bak = path.with_name(f"{path.name}.backup.{stamp}.{n}")
+            n += 1
+        if path.is_dir():
+            shutil.copytree(path, bak)
+        else:
+            shutil.copy2(path, bak)
         print(f"      backed up -> {bak.name}")

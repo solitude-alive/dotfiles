@@ -1,10 +1,11 @@
 """snapshot: live config -> repo.   check: report drift (no writes)."""
 
-import shutil
+import argparse
 
 from core import (
     COPY_FILES,
     EDITORS,
+    HOME,
     REPO,
     live_extensions,
     read,
@@ -12,37 +13,114 @@ from core import (
     redacted_settings,
     user_dir,
 )
-from diffutil import compare
+from syncutil import show_diff, sync_text, sync_tree
 
 
-def snapshot() -> int:
+def compare(label: str, repo: str | None, live: str | None) -> bool:
+    """True if drift; prints status and diff on mismatch."""
+    if repo is None and live is None:
+        return False
+    if repo is None:
+        print(f"    DRIFT {label}: live exists but not snapshotted")
+        return True
+    if live is None:
+        print(f"    DRIFT {label}: snapshotted but missing live")
+        return True
+    if repo != live:
+        print(f"    DRIFT {label}:")
+        show_diff(live, repo)
+        return True
+    print(f"    ok    {label}")
+    return False
+
+
+def snapshot(args: argparse.Namespace) -> int:
+    changed = False
+    wrote = False
     for name, (support, extdir, _cli) in EDITORS.items():
+        if args.editor and args.editor != name:
+            continue
         src, dst = user_dir(support), REPO / name
         if not src.is_dir():
             print(f"  [{name}] not installed, skipping")
             continue
-        dst.mkdir(parents=True, exist_ok=True)
         print(f"  [{name}] {src}")
 
         if (src / "settings.json").is_file():
-            (dst / "settings.json").write_text(redacted_settings(src / "settings.json"))
-            print("    + settings.json")
+            settings = redacted_settings(src / "settings.json")
+            if settings is None:
+                print("    settings.json is not valid JSON, skipping")
+            else:
+                found, done = sync_text(
+                    "settings.json",
+                    dst / "settings.json",
+                    settings,
+                    args,
+                    current_label="repo",
+                    target_label="live",
+                )
+                changed |= found
+                wrote |= done
+        else:
+            found, done = sync_text(
+                "settings.json",
+                dst / "settings.json",
+                None,
+                args,
+                current_label="repo",
+                target_label="live",
+            )
+            changed |= found
+            wrote |= done
+
         for fname in COPY_FILES:
-            if (src / fname).is_file():
-                (dst / fname).write_text(read_copy(src / fname))
-                print(f"    + {fname}")
+            target = read_copy(src / fname) if (src / fname).is_file() else None
+            found, done = sync_text(
+                fname,
+                dst / fname,
+                target,
+                args,
+                current_label="repo",
+                target_label="live",
+            )
+            changed |= found
+            wrote |= done
 
-        snip = src / "snippets"
-        if snip.is_dir() and any(snip.iterdir()):
-            shutil.rmtree(dst / "snippets", ignore_errors=True)
-            shutil.copytree(snip, dst / "snippets")
-            print("    + snippets/")
+        found, done = sync_tree(
+            "snippets/",
+            src / "snippets",
+            dst / "snippets",
+            args,
+            current_label="repo",
+            target_label="live",
+        )
+        changed |= found
+        wrote |= done
 
+        ext_json = HOME / extdir / "extensions" / "extensions.json"
         exts = live_extensions(extdir)
-        if exts is not None:
-            (dst / "extensions.txt").write_text(exts)
-            print(f"    + extensions.txt ({exts.count(chr(10))} ids)")
-    print("Done. Review with: git diff editors/")
+        if exts is None and ext_json.is_file():
+            print("    extensions.json is not valid JSON, skipping")
+        else:
+            found, done = sync_text(
+                "extensions.txt",
+                dst / "extensions.txt",
+                exts,
+                args,
+                current_label="repo",
+                target_label="live",
+            )
+            changed |= found
+            wrote |= done
+
+    if args.dry_run:
+        print("Dry run complete. No files written.")
+    elif wrote:
+        print("Done. Review accepted changes with: git diff editors/")
+    elif changed:
+        print("No files written.")
+    else:
+        print("No snapshot changes.")
     return 0
 
 

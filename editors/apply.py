@@ -13,46 +13,53 @@ from core import (
     dump_settings,
     live_extensions,
     load_json,
-    read,
     user_dir,
 )
-from diffutil import show_diff
-
-
-def approve(desc: str, args: argparse.Namespace) -> bool:
-    if args.dry_run:
-        print(f"    [dry-run] would {desc}")
-        return False
-    if args.force:
-        print(f"    {desc}")
-        return True
-    return input(f"    {desc}? [y/N] ").strip().lower() in ("y", "yes")
+from syncutil import approve, sync_text, sync_tree
 
 
 def apply_settings(src, dst, args) -> None:
     live, repo = load_json(dst) or {}, load_json(src) or {}
     preserved = {k: live[k] for k in IGNORE if k in live}
     target = dump_settings({**preserved, **repo})  # repo wins, IGNORE kept
-    if read(dst) == target:
-        return
-    show_diff(read(dst), target)
-    if approve("write settings.json", args):
-        backup(dst)
-        dst.write_text(target)
+    sync_text(
+        "settings.json",
+        dst,
+        target,
+        args,
+        current_label="live",
+        target_label="repo",
+        before_change=backup,
+    )
 
 
 def apply_files(src_dir, dst_dir, args) -> None:
     for fname in COPY_FILES:
         rp, lp = src_dir / fname, dst_dir / fname
-        if rp.is_file():
-            if read(lp) != rp.read_text():
-                show_diff(read(lp), rp.read_text())
-                if approve(f"write {fname}", args):
-                    backup(lp)
-                    shutil.copy2(rp, lp)
-        elif lp.is_file() and approve(f"remove extra {fname}", args):
-            backup(lp)
-            lp.unlink()
+        target = rp.read_text() if rp.is_file() else None
+        sync_text(
+            fname,
+            lp,
+            target,
+            args,
+            current_label="live",
+            target_label="repo",
+            remove_desc=f"remove extra {fname}",
+            before_change=backup,
+        )
+
+
+def apply_snippets(src_dir, dst_dir, args) -> None:
+    sync_tree(
+        "snippets/",
+        src_dir,
+        dst_dir,
+        args,
+        current_label="live",
+        target_label="repo",
+        remove_desc="remove extra snippets/",
+        before_change=backup,
+    )
 
 
 def apply_extensions(cli, listfile, extdir, args) -> None:
@@ -65,6 +72,12 @@ def apply_extensions(cli, listfile, extdir, args) -> None:
     to_install = sorted(repo_ids - live_ids)
     to_remove = sorted(live_ids - repo_ids)
     if not to_install and not to_remove:
+        return
+    if args.dry_run:
+        for ext in to_install:
+            approve(f"install {ext}", args)
+        for ext in to_remove:
+            approve(f"uninstall extra {ext}", args)
         return
     exe = shutil.which(cli)
     if not exe:
@@ -101,5 +114,6 @@ def apply(args: argparse.Namespace) -> int:
         if (src / "settings.json").is_file():
             apply_settings(src / "settings.json", dst / "settings.json", args)
         apply_files(src, dst, args)
+        apply_snippets(src / "snippets", dst / "snippets", args)
         apply_extensions(cli, src / "extensions.txt", extdir, args)
     return 0

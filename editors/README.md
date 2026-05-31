@@ -22,9 +22,9 @@ editors/
 ├── editors.sh    # wrapper -> editors.py
 ├── editors.py    # entry: snapshot | check | apply
 ├── core.py       # shared helpers (paths, json, ignore, backup)
+├── syncutil.py   # shared diff/dry-run/force/text-tree sync flow
 ├── snapshot.py   # snapshot + check
 ├── apply.py      # apply (clean mirror)
-├── diffutil.py   # diff output
 ├── annotations.md
 ├── vscode/   settings.json, extensions.txt
 └── cursor/   settings.json, keybindings.json, extensions.txt
@@ -33,7 +33,10 @@ editors/
 ## Usage
 
 ```bash
-./editors.sh snapshot          # refresh repo from this machine, then: git diff editors/
+./editors.sh snapshot          # interactive: review each diff, then write (editor -> repo)
+./editors.sh snapshot --dry-run  # show what would change, write nothing
+./editors.sh snapshot --force    # no prompts; refresh repo from this machine
+./editors.sh snapshot cursor     # restrict to one editor (vscode | cursor)
 ./editors.sh check             # exit 0 = in sync, 1 = drift (pre-commit/CI friendly)
 ./editors.sh apply             # interactive: review each diff, then write (repo -> editor)
 ./editors.sh apply --dry-run   # show what would change, write nothing
@@ -43,9 +46,9 @@ editors/
 
 `apply` builds a **clean mirror**: repo-tracked keys/files win, machine-local keys
 in IGNORE (`remote.SSH.remotePlatform`) are kept, and anything extra (keys, files,
-extensions not in the repo) is offered for removal. Live files are backed up to
-`<file>.backup.<timestamp>` before any write; extensions install/uninstall via the
-editor CLI.
+extensions not in the repo) is offered for removal. Live files/directories are
+backed up to `<name>.backup.<timestamp>` before any write; extensions
+install/uninstall via the editor CLI.
 
 Notes: extension lists store ids only; `remote.SSH.remotePlatform` is redacted
 (internal host names); requires `python3`.
