@@ -1,5 +1,4 @@
 {
-    "workbench.editorAssociations": {},
     "workbench.activityBar.orientation": "vertical",
     "files.autoSave": "afterDelay",
     "remote.autoForwardPortsSource": "hybrid",
@@ -19,5 +18,6 @@
     },
     "claudeCode.preferredLocation": "panel",
     "claudeCode.environmentVariables": [],
-    "window.autoDetectColorScheme": false
+    "window.autoDetectColorScheme": false,
+    "update.showReleaseNotes": false
 }
