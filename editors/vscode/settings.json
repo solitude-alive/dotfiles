@@ -1,5 +1,8 @@
 {
-    "workbench.editorAssociations": {},
-    "claudeCode.preferredLocation": "panel",
-    "files.autoSave": "afterDelay"
+    "files.autoSave": "afterDelay",
+    "update.showReleaseNotes": false,
+    "github.copilot.chat.edits.temporalContext.enabled": true,
+    "chatgpt.composerEnterBehavior": "enter",
+    "gitlens.ai.model": "vscode",
+    "gitlens.ai.vscode.model": "copilot:gpt-4.1"
 }

@@ -3,6 +3,7 @@ charliermarsh.ruff
 davidanson.vscode-markdownlint
 dvirtz.parquet-viewer
 eamodio.gitlens
+github.codespaces
 ms-azuretools.vscode-containers
 ms-python.debugpy
 ms-python.python
